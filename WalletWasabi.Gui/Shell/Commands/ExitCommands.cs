@@ -1,0 +1,33 @@
+﻿using System.Composition;
+using System.Threading.Tasks;
+using AvalonStudio.Commands;
+using ReactiveUI;
+using System;
+using Avalonia;
+
+namespace WalletWasabi.Gui.Shell.Commands
+{
+	internal class ExitCommands
+	{
+		[ExportCommandDefinition("File.Exit")]
+		public CommandDefinition ExitCommand { get; }
+
+		[ImportingConstructor]
+		public ExitCommands(CommandIconService commandIconService)
+		{
+			var exit = ReactiveCommand.Create(OnExit);
+
+			exit.ThrownExceptions.Subscribe(ex => Logging.Logger.LogWarning<ExitCommands>(ex));
+
+			ExitCommand = new CommandDefinition(
+			   "Exit",
+			   commandIconService.GetCompletionKindImage("Exit"),
+			   exit);
+		}
+
+		private void OnExit()
+		{
+			Application.Current.MainWindow.Close();
+		}
+	}
+}
